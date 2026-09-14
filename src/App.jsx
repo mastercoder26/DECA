@@ -5,12 +5,48 @@ import Magnetic from './components/Magnetic.jsx'
 
 const DISTRICTS_START = new Date('2026-12-07T08:00:00-06:00')
 
-const NAV_ITEMS = [
-  ['About', '#about'],
-  ['Past Results', '#results'],
-  ['Sponsors', '#sponsors'],
-  ['Help', '#help'],
-  ['Resources', '#resources'],
+const CHAPTER_ITEMS = [
+  {
+    id: 'about',
+    label: 'About',
+    meta: 'Rouse High School',
+    title: 'Rouse DECA',
+    body: 'Student members compete in marketing, finance, hospitality, management, and entrepreneurship.',
+    accent: '#6fd7ff',
+  },
+  {
+    id: 'results',
+    label: 'Past Results',
+    meta: 'Orlando · 2025',
+    title: 'ICDC First Place',
+    body: 'Rouse DECA brought home a first-place trophy from the International Career Development Conference.',
+    accent: '#ffb7ee',
+  },
+  {
+    id: 'sponsors',
+    label: 'Sponsors',
+    meta: 'Chapter support',
+    title: 'Sponsor the team',
+    body: 'Sponsorships help students cover registration, travel, lodging, and competition materials.',
+    accent: '#ffe589',
+  },
+  {
+    id: 'help',
+    label: 'Help',
+    meta: 'Member support',
+    title: 'Competition help',
+    body: 'Find deadlines, event guidance, practice materials, and answers before competition day.',
+    accent: '#b8ffdd',
+  },
+  {
+    id: 'resources',
+    label: 'Resources',
+    meta: 'Texas DECA',
+    title: 'Official resources',
+    body: 'Competitive-event information and the current Texas DECA calendar are available online.',
+    accent: '#b9c4ff',
+    href: 'https://www.texasdeca.org/districts',
+  },
 ]
 
 const calculateRemaining = () => {
@@ -26,11 +62,22 @@ const calculateRemaining = () => {
 
 function TimeUnit({ label, value }) {
   const formatted = String(value).padStart(2, '0')
+  const previousValue = useRef(formatted)
+  const outgoing = previousValue.current
+
+  useLayoutEffect(() => {
+    previousValue.current = formatted
+  }, [formatted])
 
   return (
     <div className="time-unit">
       <div className="time-unit__window" aria-hidden="true">
-        <span className="time-unit__value" key={formatted}>{formatted}</span>
+        <span className="time-unit__value time-unit__value--out" key={`out-${outgoing}-${formatted}`}>
+          {outgoing}
+        </span>
+        <span className="time-unit__value time-unit__value--in" key={`in-${formatted}`}>
+          {formatted}
+        </span>
       </div>
       <span className="time-unit__label">{label}</span>
     </div>
@@ -40,12 +87,14 @@ function TimeUnit({ label, value }) {
 function App() {
   const [remaining, setRemaining] = useState(calculateRemaining)
   const [assetReady, setAssetReady] = useState(false)
+  const [activeId, setActiveId] = useState('about')
   const heroRef = useRef(null)
   const logoRef = useRef(null)
   const navRef = useRef(null)
-  const titleRef = useRef(null)
+  const scriptRef = useRef(null)
+  const explorerRef = useRef(null)
   const countdownRef = useRef(null)
-  const footerRef = useRef(null)
+  const activeItem = CHAPTER_ITEMS.find((item) => item.id === activeId) ?? CHAPTER_ITEMS[0]
 
   useEffect(() => {
     const timer = window.setInterval(() => setRemaining(calculateRemaining()), 1000)
@@ -83,8 +132,10 @@ function App() {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let idleSpin
     const context = gsap.context(() => {
+      const revealTargets = [navRef.current, scriptRef.current, explorerRef.current, countdownRef.current]
+
       if (reduceMotion) {
-        gsap.set([logoRef.current, navRef.current, titleRef.current, countdownRef.current, footerRef.current], {
+        gsap.set([logoRef.current, ...revealTargets], {
           autoAlpha: 1,
           clearProps: 'transform,filter',
         })
@@ -98,7 +149,7 @@ function App() {
           document.body.classList.remove('intro-running')
           idleSpin = gsap.to(logoRef.current, {
             rotation: '+=360',
-            duration: 32,
+            duration: 38,
             ease: 'none',
             force3D: true,
             repeat: -1,
@@ -107,54 +158,38 @@ function App() {
       })
 
       timeline
-        .set([navRef.current, titleRef.current, countdownRef.current, footerRef.current], { autoAlpha: 0 })
+        .set(revealTargets, { autoAlpha: 0 })
         .set(logoRef.current, {
           autoAlpha: 0,
           xPercent: -50,
-          scale: 7,
-          rotation: -14,
-          x: '-18vw',
-          y: '18vh',
-          filter: 'blur(2px)',
+          yPercent: -50,
+          scale: 6.5,
+          rotation: -10,
+          filter: 'blur(8px)',
         })
-        .to(logoRef.current, { autoAlpha: 1, duration: 0.16 })
+        .to(logoRef.current, { autoAlpha: 1, duration: 0.12 })
         .to(logoRef.current, {
-          scale: 0.44,
-          rotation: 12,
-          x: '32vw',
-          y: '-10vh',
+          scale: 0.93,
+          rotation: 2,
           filter: 'blur(0px)',
-          duration: 0.92,
-          ease: 'expo.inOut',
-        })
-        .to(logoRef.current, {
-          scale: 1.08,
-          rotation: -28,
-          x: '-38vw',
-          y: '10vh',
-          duration: 0.84,
-          ease: 'power3.inOut',
-        })
-        .to(logoRef.current, {
-          scale: 0.86,
-          rotation: 8,
-          x: '8vw',
-          y: '-3vh',
-          duration: 0.78,
-          ease: 'power3.out',
+          duration: 1.55,
+          ease: 'expo.out',
         })
         .to(logoRef.current, {
           scale: 1,
           rotation: 0,
-          x: 0,
-          y: 0,
-          duration: 0.76,
-          ease: 'elastic.out(1, 0.62)',
+          duration: 0.46,
+          ease: 'back.out(2.2)',
         })
-        .fromTo(navRef.current, { y: -18 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out' }, '-=0.9')
-        .fromTo(titleRef.current, { y: 28 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.42')
-        .fromTo(countdownRef.current, { y: 22 }, { autoAlpha: 1, y: 0, duration: 0.65, ease: 'power3.out' }, '-=0.42')
-        .fromTo(footerRef.current, { y: 12 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.35')
+        .fromTo(
+          scriptRef.current,
+          { yPercent: 18, scale: 0.94, filter: 'blur(12px)' },
+          { autoAlpha: 1, yPercent: 0, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' },
+          '-=0.52',
+        )
+        .fromTo(navRef.current, { y: -16 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out' }, '-=0.72')
+        .fromTo(explorerRef.current, { y: 26 }, { autoAlpha: 1, y: 0, duration: 0.68, ease: 'power3.out' }, '-=0.5')
+        .fromTo(countdownRef.current, { y: 26 }, { autoAlpha: 1, y: 0, duration: 0.68, ease: 'power3.out' }, '-=0.58')
     }, heroRef)
 
     return () => {
@@ -164,86 +199,127 @@ function App() {
     }
   }, [assetReady])
 
+  const handlePointerMove = (event) => {
+    if (window.matchMedia('(pointer: coarse)').matches) return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2
+    event.currentTarget.style.setProperty('--pointer-x', x.toFixed(3))
+    event.currentTarget.style.setProperty('--pointer-y', y.toFixed(3))
+  }
+
+  const handlePointerLeave = (event) => {
+    event.currentTarget.style.setProperty('--pointer-x', '0')
+    event.currentTarget.style.setProperty('--pointer-y', '0')
+  }
+
   return (
     <main>
       <section
         className={`hero${assetReady ? ' is-ready' : ''}`}
-        id="about"
         ref={heroRef}
         aria-labelledby="hero-title"
+        style={{ '--active-color': activeItem.accent }}
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
       >
-        <header className="topbar" ref={navRef}>
-          <a className="wordmark" href="#about" aria-label="Rouse DECA home">
-            <span>RHS</span>
-            <i aria-hidden="true" />
-            <span>DECA</span>
-          </a>
+        <div className="hero__aurora" aria-hidden="true" />
 
-          <nav className="topbar__nav" aria-label="Primary navigation">
-            {NAV_ITEMS.map(([label, href]) => (
-              <Magnetic key={label}>
-                <a href={href}>{label}</a>
-              </Magnetic>
-            ))}
-          </nav>
+        <div className="hero__shell">
+          <header className="topbar" ref={navRef}>
+            <a className="wordmark" href="#about" aria-label="Rouse DECA home">
+              <span className="wordmark__mark">R</span>
+              <span>Rouse High School</span>
+            </a>
 
-          <span className="topbar__year">26—27</span>
-        </header>
+            <nav className="topbar__nav" aria-label="Primary navigation">
+              {CHAPTER_ITEMS.map((item) => (
+                <Magnetic key={item.id} strength={0.28}>
+                  <a
+                    href={`#${item.id}`}
+                    onMouseEnter={() => setActiveId(item.id)}
+                    onFocus={() => setActiveId(item.id)}
+                    onClick={() => setActiveId(item.id)}
+                  >
+                    {item.label}
+                  </a>
+                </Magnetic>
+              ))}
+            </nav>
+          </header>
 
-        <div className="hero__grid" aria-hidden="true" />
-        <span className="hero__chapter" aria-hidden="true">DISTRICT 05 / TEXAS</span>
+          <div className="hero__stage">
+            <h1 className="sr-only" id="hero-title">Rouse DECA</h1>
+            <p className="hero__school">Rouse High School presents</p>
 
-        <img
-          className="hero__logo"
-          ref={logoRef}
-          src="/deca-mark.png"
-          alt="DECA diamond mark"
-          fetchPriority="high"
-          onLoad={() => setAssetReady(true)}
-        />
-
-        <div className="hero__content">
-          <h1 id="hero-title" ref={titleRef}>Rouse DECA</h1>
-
-          <div className="countdown" id="countdown" ref={countdownRef}>
-            <div className="countdown__heading">
-              <p>Time to DECA Districts</p>
-              <time dateTime="2026-12-07T08:00:00-06:00">Dec 07—08 · Round Rock</time>
+            <div className="hero__script-stage" ref={scriptRef} aria-hidden="true">
+              <span className="hero__script" data-text="Deca">Deca</span>
             </div>
 
-            <div
-              className="countdown__clock"
-              role="timer"
-              aria-label={`${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes, and ${remaining.seconds} seconds until DECA Districts`}
-            >
-              <TimeUnit label="Days" value={remaining.days} />
-              <TimeUnit label="Hours" value={remaining.hours} />
-              <TimeUnit label="Minutes" value={remaining.minutes} />
-              <TimeUnit label="Seconds" value={remaining.seconds} />
-            </div>
+            <div className="hero__orbit" aria-hidden="true" />
+            <img
+              className="hero__logo"
+              ref={logoRef}
+              src="/deca-mark.png"
+              alt="DECA diamond mark"
+              fetchPriority="high"
+              onLoad={() => setAssetReady(true)}
+              onError={() => setAssetReady(true)}
+            />
+          </div>
+
+          <div className="hero__bottom">
+            <section className="explorer" id="explore" ref={explorerRef} aria-label="Explore Rouse DECA">
+              <div className="explorer__tabs">
+                {CHAPTER_ITEMS.map((item, index) => (
+                  <Magnetic key={item.id} strength={0.2}>
+                    <button
+                      className={activeId === item.id ? 'is-active' : ''}
+                      id={item.id}
+                      type="button"
+                      aria-pressed={activeId === item.id}
+                      onMouseEnter={() => setActiveId(item.id)}
+                      onFocus={() => setActiveId(item.id)}
+                      onClick={() => setActiveId(item.id)}
+                    >
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      {item.label}
+                    </button>
+                  </Magnetic>
+                ))}
+              </div>
+
+              <div className="explorer__panel" key={activeItem.id}>
+                <span className="explorer__meta">{activeItem.meta}</span>
+                <h2>{activeItem.title}</h2>
+                <p>{activeItem.body}</p>
+                {activeItem.href && (
+                  <a href={activeItem.href} target="_blank" rel="noreferrer">
+                    Open Texas DECA <span aria-hidden="true">↗</span>
+                  </a>
+                )}
+              </div>
+            </section>
+
+            <section className="countdown" id="countdown" ref={countdownRef} aria-labelledby="countdown-title">
+              <div className="countdown__heading">
+                <p id="countdown-title">Time to DECA Districts</p>
+                <time dateTime="2026-12-07T08:00:00-06:00">Dec 07—08 · Round Rock</time>
+              </div>
+
+              <div
+                className="countdown__clock"
+                role="timer"
+                aria-label={`${remaining.days} days, ${remaining.hours} hours, ${remaining.minutes} minutes, and ${remaining.seconds} seconds until DECA Districts`}
+              >
+                <TimeUnit label="Days" value={remaining.days} />
+                <TimeUnit label="Hours" value={remaining.hours} />
+                <TimeUnit label="Minutes" value={remaining.minutes} />
+                <TimeUnit label="Seconds" value={remaining.seconds} />
+              </div>
+            </section>
           </div>
         </div>
-
-        <div className="hero__footer" ref={footerRef}>
-          <span>Rouse High School</span>
-          <span>Competition starts Monday, 8:00 AM CT</span>
-          <span>Leander, Texas</span>
-        </div>
-      </section>
-
-      <section className="landing-index" aria-label="Rouse DECA links">
-        <a id="results" href="https://rhs.leanderisd.org/" target="_blank" rel="noreferrer">
-          <span>01</span><strong>Past Results</strong><em>Rouse High School ↗</em>
-        </a>
-        <div id="sponsors">
-          <span>02</span><strong>Sponsors</strong><em>Chapter partners</em>
-        </div>
-        <div id="help">
-          <span>03</span><strong>Help</strong><em>Competition support</em>
-        </div>
-        <a id="resources" href="https://www.texasdeca.org/districts" target="_blank" rel="noreferrer">
-          <span>04</span><strong>Resources</strong><em>Texas DECA ↗</em>
-        </a>
       </section>
     </main>
   )
