@@ -55,7 +55,9 @@ function TimeUnit({ label, value }) {
   const formatted = String(value).padStart(2, '0')
   const previousValue = useRef(formatted)
   const outgoing = previousValue.current
-  const hasChanged = outgoing !== formatted
+  const digitCount = Math.max(formatted.length, outgoing.length)
+  const currentDigits = formatted.padStart(digitCount, '0').split('')
+  const previousDigits = outgoing.padStart(digitCount, '0').split('')
 
   useLayoutEffect(() => {
     previousValue.current = formatted
@@ -63,18 +65,30 @@ function TimeUnit({ label, value }) {
 
   return (
     <div className="time-unit">
-      <div className="time-unit__window" aria-hidden="true">
-        {hasChanged && (
-          <span className="time-unit__value time-unit__value--out" key={`out-${outgoing}-${formatted}`}>
-            {outgoing}
-          </span>
-        )}
-        <span
-          className={`time-unit__value ${hasChanged ? 'time-unit__value--in' : 'time-unit__value--static'}`}
-          key={`in-${formatted}`}
-        >
-          {formatted}
-        </span>
+      <div className="time-unit__digits" aria-hidden="true">
+        {currentDigits.map((digit, index) => {
+          const previousDigit = previousDigits[index]
+          const hasChanged = digit !== previousDigit
+
+          return (
+            <span className="time-unit__digit-window" key={`${label}-${index}`}>
+              {hasChanged && (
+                <span
+                  className="time-unit__value time-unit__value--out"
+                  key={`out-${index}-${previousDigit}-${digit}`}
+                >
+                  {previousDigit}
+                </span>
+              )}
+              <span
+                className={`time-unit__value ${hasChanged ? 'time-unit__value--in' : 'time-unit__value--static'}`}
+                key={`in-${index}-${digit}`}
+              >
+                {digit}
+              </span>
+            </span>
+          )
+        })}
       </div>
       <span className="time-unit__label">{label}</span>
     </div>

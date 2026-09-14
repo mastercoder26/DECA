@@ -232,29 +232,37 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 5px; }
 
 .time-unit:first-child { border-left: 0; }
 
-.time-unit__window {
-  position: relative;
+.time-unit__digits {
+  display: flex;
   height: clamp(3.5rem, 5.5vw, 5.9rem);
+  align-items: flex-start;
+}
+
+.time-unit__digit-window {
+  display: block;
+  position: relative;
+  width: 0.63em;
+  height: 100%;
   overflow: hidden;
-  perspective: 500px;
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(2.9rem, 4.8vw, 5.25rem);
+  font-weight: 400;
+  line-height: 1;
 }
 
 .time-unit__value {
   display: block;
   position: absolute;
   inset: 0;
-  font-family: var(--mono);
-  font-size: clamp(2.9rem, 4.8vw, 5.25rem);
+  font-feature-settings: 'tnum' 1;
   font-variant-numeric: tabular-nums;
-  font-weight: 300;
-  letter-spacing: -0.1em;
   line-height: 1;
   will-change: transform, filter, opacity;
 }
 
-.time-unit__value--in { animation: digit-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-.time-unit__value--out { animation: digit-out 420ms cubic-bezier(0.7, 0, 0.84, 0) both; }
-.time-unit:last-child .time-unit__value--in { color: #199eea; }
+.time-unit__value--in { animation: digit-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.time-unit__value--out { animation: digit-out 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.time-unit:last-child .time-unit__value { color: #199eea; }
 
 .time-unit__label {
   display: block;
@@ -272,13 +280,13 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 5px; }
 }
 
 @keyframes digit-in {
-  from { opacity: 0; filter: blur(3px); transform: translateY(82%) rotateX(-16deg); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0) rotateX(0); }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 @keyframes digit-out {
-  from { opacity: 1; filter: blur(0); transform: translateY(0) rotateX(0); }
-  to { opacity: 0; filter: blur(3px); transform: translateY(-82%) rotateX(16deg); }
+  from { transform: translateY(0); }
+  to { transform: translateY(-100%); }
 }
 
 @media (max-width: 920px) {
@@ -308,8 +316,8 @@ a:focus-visible { outline: 2px solid var(--blue); outline-offset: 5px; }
   .countdown__heading time { display: none; }
   .countdown__clock { min-height: 8.5rem; }
   .time-unit { padding: 1rem 0.45rem; }
-  .time-unit__window { height: 3.15rem; }
-  .time-unit__value { font-size: clamp(2.65rem, 13vw, 3.4rem); }
+  .time-unit__digits { height: 3.15rem; }
+  .time-unit__digit-window { font-size: clamp(2.65rem, 13vw, 3.4rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
