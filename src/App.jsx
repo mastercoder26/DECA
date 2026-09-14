@@ -81,6 +81,7 @@ function App() {
     if (!assetReady) return undefined
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let idleSpin
     const context = gsap.context(() => {
       if (reduceMotion) {
         gsap.set([logoRef.current, navRef.current, titleRef.current, countdownRef.current, footerRef.current], {
@@ -93,7 +94,16 @@ function App() {
       document.body.classList.add('intro-running')
       const timeline = gsap.timeline({
         defaults: { force3D: true },
-        onComplete: () => document.body.classList.remove('intro-running'),
+        onComplete: () => {
+          document.body.classList.remove('intro-running')
+          idleSpin = gsap.to(logoRef.current, {
+            rotation: '+=360',
+            duration: 32,
+            ease: 'none',
+            force3D: true,
+            repeat: -1,
+          })
+        },
       })
 
       timeline
@@ -109,34 +119,28 @@ function App() {
         })
         .to(logoRef.current, { autoAlpha: 1, duration: 0.16 })
         .to(logoRef.current, {
-          scale: 0.38,
-          rotation: 14,
-          x: '24vw',
-          y: '-12vh',
+          scale: 0.44,
+          rotation: 12,
+          x: '32vw',
+          y: '-10vh',
           filter: 'blur(0px)',
           duration: 0.92,
           ease: 'expo.inOut',
         })
         .to(logoRef.current, {
-          scale: 1.75,
-          rotation: -68,
-          x: '-68vw',
-          y: '18vh',
-          duration: 0.72,
-          ease: 'power4.in',
-        })
-        .set(logoRef.current, {
-          scale: 1.5,
-          rotation: 52,
-          x: '68vw',
-          y: '-22vh',
+          scale: 1.08,
+          rotation: -28,
+          x: '-38vw',
+          y: '10vh',
+          duration: 0.84,
+          ease: 'power3.inOut',
         })
         .to(logoRef.current, {
-          scale: 0.78,
-          rotation: -9,
-          x: '-4vw',
-          y: '3vh',
-          duration: 0.95,
+          scale: 0.86,
+          rotation: 8,
+          x: '8vw',
+          y: '-3vh',
+          duration: 0.78,
           ease: 'power3.out',
         })
         .to(logoRef.current, {
@@ -144,8 +148,8 @@ function App() {
           rotation: 0,
           x: 0,
           y: 0,
-          duration: 0.72,
-          ease: 'elastic.out(1, 0.55)',
+          duration: 0.76,
+          ease: 'elastic.out(1, 0.62)',
         })
         .fromTo(navRef.current, { y: -18 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out' }, '-=0.9')
         .fromTo(titleRef.current, { y: 28 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.42')
@@ -155,6 +159,7 @@ function App() {
 
     return () => {
       document.body.classList.remove('intro-running')
+      idleSpin?.kill()
       context.revert()
     }
   }, [assetReady])
