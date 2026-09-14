@@ -7,9 +7,7 @@ const DISTRICTS_START = new Date('2026-12-07T08:00:00-06:00')
 
 const NAV_ITEMS = [
   { label: 'About', href: '#about' },
-  { label: 'Past Results', href: '#results' },
-  { label: 'Sponsors', href: '#sponsors' },
-  { label: 'Help', href: '#help' },
+  { label: 'Get Ready', href: '#help' },
   { label: 'Resources', href: 'https://www.texasdeca.org', external: true },
 ]
 
@@ -103,6 +101,7 @@ function App() {
   const centerRef = useRef(null)
   const centerLogoRef = useRef(null)
   const titleRef = useRef(null)
+  const actionsRef = useRef(null)
   const countdownRef = useRef(null)
 
   useEffect(() => {
@@ -167,7 +166,7 @@ function App() {
       })
 
       timeline
-        .set([navRef.current, titleRef.current, countdownRef.current], { autoAlpha: 0 })
+        .set([navRef.current, titleRef.current, actionsRef.current, countdownRef.current], { autoAlpha: 0 })
         .set(centerRef.current, { autoAlpha: 0, scale: 8.5, rotation: -9, filter: 'blur(9px)' })
         .set(marks, {
           autoAlpha: 0,
@@ -206,6 +205,7 @@ function App() {
           '-=0.58',
         )
         .fromTo(titleRef.current, { y: 18 }, { autoAlpha: 1, y: 0, duration: 0.68, ease: 'power3.out' }, '-=0.7')
+        .fromTo(actionsRef.current, { y: 12 }, { autoAlpha: 1, y: 0, duration: 0.52, ease: 'power3.out' }, '-=0.42')
         .fromTo(navRef.current, { y: -14 }, { autoAlpha: 1, y: 0, duration: 0.58, ease: 'power3.out' }, '-=0.58')
         .fromTo(countdownRef.current, { y: 28 }, { autoAlpha: 1, y: 0, duration: 0.72, ease: 'power3.out' }, '-=0.48')
     }, heroRef)
@@ -291,9 +291,14 @@ function App() {
           </div>
 
           <div className="hero__title" ref={titleRef}>
-            <p>Rouse High School</p>
+            <p>Rouse High School’s business &amp; leadership chapter</p>
             <h1 id="hero-title"><span>Rouse</span><span>DECA</span></h1>
             <p>Marketing · Finance · Hospitality · Management · Entrepreneurship</p>
+          </div>
+
+          <div className="hero__actions" ref={actionsRef}>
+            <a className="button button--primary" href="#help">Start preparing <span aria-hidden="true">↗</span></a>
+            <a className="button button--quiet" href="#countdown">View districts countdown <span aria-hidden="true">↓</span></a>
           </div>
         </div>
 
@@ -315,6 +320,59 @@ function App() {
           </div>
         </section>
       </section>
+
+      <section className="pathways" id="about" aria-labelledby="pathways-title">
+        <div className="section-heading">
+          <p className="eyebrow">Your next move</p>
+          <h2 id="pathways-title">Everything you need to compete with confidence.</h2>
+          <p>Whether you are new to DECA or heading back to the stage, start with the path that fits today.</p>
+        </div>
+        <div className="pathways__grid">
+          <a className="pathway-card" href="https://www.texasdeca.org" target="_blank" rel="noreferrer">
+            <span className="pathway-card__number">01</span>
+            <h3>Explore events</h3>
+            <p>Find the competitive event that matches your interests and strengths.</p>
+            <span className="pathway-card__link">Browse Texas DECA <span aria-hidden="true">↗</span></span>
+          </a>
+          <a className="pathway-card pathway-card--blue" href="#help">
+            <span className="pathway-card__number">02</span>
+            <h3>Get ready</h3>
+            <p>Use the chapter’s preparation checklist and reach out when you need a hand.</p>
+            <span className="pathway-card__link">See the checklist <span aria-hidden="true">↓</span></span>
+          </a>
+          <a className="pathway-card" href="#about">
+            <span className="pathway-card__number">03</span>
+            <h3>Find your people</h3>
+            <p>Meet the chapter, build your confidence, and compete alongside Rouse students.</p>
+            <span className="pathway-card__link">Learn about Rouse DECA <span aria-hidden="true">↑</span></span>
+          </a>
+        </div>
+      </section>
+
+      <section className="chapter-note" aria-labelledby="chapter-title">
+        <p className="eyebrow">Chapter momentum</p>
+        <h2 id="chapter-title">Big goals, built one practice at a time.</h2>
+        <p>Rouse DECA brings ambitious students together to build business skills, lead with purpose, and show up prepared.</p>
+      </section>
+
+      <section className="support" id="help" aria-labelledby="help-title">
+        <div>
+          <p className="eyebrow">Need a hand?</p>
+          <h2 id="help-title">Not sure where to begin?</h2>
+          <p>Start by choosing an event, then make a small, clear plan. Your officers and advisors are here to help you move forward.</p>
+          <ol className="prep-list">
+            <li>Choose the event you want to try.</li>
+            <li>Set aside time for your first practice.</li>
+            <li>Ask an officer or advisor your next question.</li>
+          </ol>
+        </div>
+        <a className="button button--primary" href="https://www.texasdeca.org" target="_blank" rel="noreferrer">Open chapter resources <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <footer className="footer">
+        <span>Rouse DECA</span>
+        <span>Built for the next competitor.</span>
+      </footer>
     </main>
   )
 }
