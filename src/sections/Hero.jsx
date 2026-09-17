@@ -5,11 +5,16 @@ import { FIELD_MARKS } from '../data/marks.js'
 import { DISTRICTS_LABEL, DISTRICTS_START, NAV_ITEMS, TICKER_WORDS } from '../data/content.js'
 import CountdownClock from '../components/CountdownClock.jsx'
 import Magnetic from '../components/Magnetic.jsx'
+import MarkField from '../components/MarkField.jsx'
+import DiamondTrail from '../components/DiamondTrail.jsx'
+import useInteractivePointer from '../hooks/useInteractivePointer.js'
+import DrawnWord from '../components/DrawnWord.jsx'
 
 const IDLE_SPIN_DURATION = 34
 
 function Hero() {
   const [assetReady, setAssetReady] = useState(false)
+  const [isIntroDone, setIntroDone] = useState(false)
   const heroRef = useRef(null)
   const navRef = useRef(null)
   const centerRef = useRef(null)
@@ -17,6 +22,8 @@ function Hero() {
   const titleRef = useRef(null)
   const actionsRef = useRef(null)
   const countdownRef = useRef(null)
+  const canvasAreaRef = useRef(null)
+  const pointerRef = useInteractivePointer(canvasAreaRef)
 
   useLayoutEffect(() => {
     if (!assetReady) return undefined
@@ -35,6 +42,7 @@ function Hero() {
           autoAlpha: 1,
           clearProps: 'transform,filter',
         })
+        setIntroDone(true)
         return
       }
 
@@ -44,6 +52,7 @@ function Hero() {
         defaults: { force3D: true },
         onComplete: () => {
           document.body.classList.remove('intro-running')
+          setIntroDone(true)
           idleSpin = gsap.to(centerLogoRef.current, {
             rotation: '+=360',
             duration: IDLE_SPIN_DURATION,
@@ -142,25 +151,9 @@ function Hero() {
         </Magnetic>
       </header>
 
-      <div className="hero__canvas" id="top">
-        <div className="mark-field" aria-hidden="true">
-          {FIELD_MARKS.map((mark, index) => (
-            <span
-              className="mark-field__item"
-              key={`${mark.x}-${mark.y}`}
-              style={{
-                '--x': `${mark.x}%`,
-                '--y': `${mark.y}%`,
-                '--size': `${mark.size}px`,
-                '--rotation': `${mark.rotation}deg`,
-                '--depth': mark.depth,
-                '--delay': `${(index % 7) * -0.7}s`,
-              }}
-            >
-              <img src="/deca-mark.png" alt="" />
-            </span>
-          ))}
-        </div>
+      <div className="hero__canvas" id="top" ref={canvasAreaRef}>
+        <MarkField containerRef={canvasAreaRef} pointerRef={pointerRef} />
+        <DiamondTrail containerRef={canvasAreaRef} pointerRef={pointerRef} />
 
         <div className="hero__center" ref={centerRef}>
           <img
@@ -176,7 +169,10 @@ function Hero() {
 
         <div className="hero__title" ref={titleRef}>
           <p>Rouse High School&rsquo;s business &amp; leadership chapter</p>
-          <h1 id="hero-title"><span>Rouse</span><span>DECA</span></h1>
+          <h1 id="hero-title">
+            <span>Rouse</span>
+            <DrawnWord start={isIntroDone} label="DECA">DECA</DrawnWord>
+          </h1>
           <p>Leander, Texas · Chartered chapter of Texas DECA</p>
         </div>
 
@@ -192,7 +188,7 @@ function Hero() {
 
       <div className="hero__ticker" aria-hidden="true">
         <div className="hero__ticker-track">
-          {[0, 1].map((copy) => (
+          {[0, 1, 2, 3].map((copy) => (
             <div className="hero__ticker-run" key={copy}>
               {TICKER_WORDS.map((word) => (
                 <span key={`${copy}-${word}`}>

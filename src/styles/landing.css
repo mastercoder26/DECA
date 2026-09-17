@@ -77,18 +77,30 @@
   will-change: transform, opacity;
 }
 
+.mark-field__push {
+  --glow: 0;
+  display: block;
+  will-change: transform;
+}
+
 .mark-field__item img {
   width: 100%;
   height: auto;
-  opacity: 0.17;
-  transition: opacity 300ms ease, transform 480ms var(--ease-settle);
+  /* Base opacity lifts as the cursor nears; --glow is written per frame. */
+  opacity: calc(var(--base-opacity, 0.17) + var(--glow, 0) * 0.72);
   animation: satellite-drift 7s ease-in-out var(--delay) infinite alternate;
 }
 
-.mark-field__item:nth-child(3n) img { opacity: 0.28; }
-.mark-field__item:nth-child(4n) img { opacity: 0.1; }
-.hero__canvas:hover .mark-field__item img { opacity: 0.24; }
-.mark-field__item:hover img { opacity: 0.95 !important; transform: scale(1.55) rotate(18deg); }
+.mark-field__item:nth-child(3n) img { --base-opacity: 0.28; }
+.mark-field__item:nth-child(4n) img { --base-opacity: 0.1; }
+
+/* Cursor-driven canvas trail, above the field and below the centre mark. */
+.diamond-trail {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
 
 .hero__center {
   position: absolute;
@@ -128,12 +140,56 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 0.15em;
+  gap: 0.08em;
   font-size: clamp(3.3rem, 7.3vw, 7.7rem);
   font-weight: 900;
   letter-spacing: -0.085em;
   line-height: 0.8;
   text-align: center;
+}
+
+/* ---------- Self-drawing script word ---------- */
+.drawn {
+  display: inline-block;
+  width: 2.6em;
+  margin-bottom: -0.22em;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.drawn svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.drawn__text,
+.drawn__fill {
+  font-family: 'Great Vibes', 'Archivo', cursive;
+  font-size: 178px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* The travelling outline. */
+.drawn__text {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-dashoffset 2600ms cubic-bezier(0.55, 0, 0.35, 1);
+}
+
+/* The solid letterform, faded in once the outline is most of the way round. */
+.drawn__fill {
+  fill: var(--ink);
+  stroke: none;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-settle) 1500ms;
+}
+
+.drawn.is-drawing .drawn__fill { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drawn__text { display: none; }
+  .drawn__fill { opacity: 1; transition: none; }
 }
 
 .hero__title p {
@@ -170,7 +226,7 @@
   -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
 
-.hero__ticker-track { display: flex; width: max-content; animation: ticker 32s linear infinite; }
+.hero__ticker-track { display: flex; width: max-content; animation: ticker 44s linear infinite; }
 .hero__ticker:hover .hero__ticker-track { animation-play-state: paused; }
 
 .hero__ticker-run { display: flex; align-items: center; }
@@ -195,6 +251,8 @@
   transform: rotate(45deg);
 }
 
+/* Four copies in the track; shifting by 50% lands exactly on copy 3, so the
+   loop restarts on an identical frame with no gap. */
 @keyframes ticker {
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(-50%, 0, 0); }

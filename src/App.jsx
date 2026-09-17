@@ -9,6 +9,7 @@ import Sponsors from './pages/Sponsors.jsx'
 import NotFound from './pages/NotFound.jsx'
 import HubLayout from './layouts/HubLayout.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import CursorDiamond from './components/CursorDiamond.jsx'
 import useSmoothScroll from './hooks/useSmoothScroll.js'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <CursorDiamond />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route element={<HubLayout />}>
