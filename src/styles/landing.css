@@ -140,7 +140,7 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
-  gap: 0.08em;
+  gap: 0.22em;
   font-size: clamp(3.3rem, 7.3vw, 7.7rem);
   font-weight: 900;
   letter-spacing: -0.085em;
@@ -151,27 +151,30 @@
 /* ---------- Self-drawing script word ---------- */
 .drawn {
   display: inline-block;
-  width: 2.6em;
-  margin-bottom: -0.22em;
+  /* Sized by height, not width: the viewBox is 150 units tall with the text
+     baseline on its bottom edge, so 1em of height renders the glyph at 1em
+     and the cap heights line up with the Archivo word beside it. */
+  height: 1.18em;
   line-height: 0;
   vertical-align: baseline;
 }
 
-.drawn svg { display: block; width: 100%; height: auto; overflow: visible; }
+.drawn svg { display: block; width: auto; height: 100%; overflow: visible; }
 
 .drawn__text,
 .drawn__fill {
-  font-family: 'Great Vibes', 'Archivo', cursive;
-  font-size: 178px;
-  font-weight: 400;
-  letter-spacing: 0;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 150px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.01em;
 }
 
 /* The travelling outline. */
 .drawn__text {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1.15;
+  stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition: stroke-dashoffset 2600ms cubic-bezier(0.55, 0, 0.35, 1);

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-const VIEW_WIDTH = 620
-const VIEW_HEIGHT = 260
+const VIEW_WIDTH = 440
+const VIEW_HEIGHT = 150
 const STROKE_LENGTH = 2600 // generous upper bound for the glyph outlines
 
 /**
@@ -42,14 +42,14 @@ function DrawnWord({ children, start, label }) {
         <text
           ref={textRef}
           x="50%"
-          y="74%"
+          y="100%"
           textAnchor="middle"
           className="drawn__text"
           style={{ strokeDasharray: STROKE_LENGTH, strokeDashoffset: isDrawing ? 0 : STROKE_LENGTH }}
         >
           {children}
         </text>
-        <text x="50%" y="74%" textAnchor="middle" className="drawn__fill">
+        <text x="50%" y="100%" textAnchor="middle" className="drawn__fill">
           {children}
         </text>
       </svg>
